@@ -1,9 +1,8 @@
-const express = require('express');
-const app = express();
+const app = require('express')();
 require('express-async-errors');
 const errorMiddleware = require('./error');
 
-const requestWrapper = require('./best');
+const requestWrapper = require('./requestWrapper');
 
 app.get('/:url', requestWrapper);
 app.use(errorMiddleware);
