@@ -129,7 +129,7 @@ This is far better than previous promise chain. But the problem is, each time we
 
 To update previous async/await approach, we can write a simple promise-wrapperto remove the repetitive try/catch block.
 
-Let’s create some utility method in utils.js
+Let’s create some utility method in `utils.js`
 
 ```javascript
 const parseError = require('parse-error');
