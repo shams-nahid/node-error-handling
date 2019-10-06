@@ -1,5 +1,7 @@
 # Node.js Error Handling (The Good, The Bad, The Ugly)
 
+![Node.js Error Handling](node_error_handling.png)
+
 In an ideal world, everything works successfully. However in real worlds there always unexpected errors.
 For example, a connection to the database drops out for whatever reason.
 So as a best practice, developers should count these unexpected situations and handle them properly.
@@ -43,16 +45,17 @@ We will go through **4 approaches** here
 
 - Create a project directory and open terminal into that.
 
-  mkdir error-handling
-  cd error-handling
+  `> mkdir error-handling`
+
+  `> cd error-handling`
 
 - Create a node project.
 
-  npm init -y
+  `> npm init -y`
 
 - Install dependencies
 
-  npm i express express-async-error parse-error request request-promise-native
+  `> npm i express express-async-error parse-error request request-promise-native`
 
 ### Callback Approach (The Ugly)
 
@@ -210,4 +213,4 @@ Some advantage of error-middlware over regular error-response is,
 
 - Whenever we throw an error, this middleware is always there to grab the error.
 
-I hope you got some clean implementation way for error handling. For any query, please comment below, I’ll replay asap.
+I hope you got some clean implementation way for error handling. For any query, please leave a response below. I will reply as soon possible. Also, you can contact iXora team for any assistance at info@ixorasolution.com
