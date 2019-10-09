@@ -214,4 +214,4 @@ Some advantage of `error-middleware` over regular `error-response` is,
 - Whenever we throw an error, this middleware is always there to grab the error.
 
 ### Wrap Up
-Congrats!! I hope you got some clean implementation way for error handling. For any query, please leave a response below. I will reply as soon possible. Also, you can contact [iXora team](https://ixorasolution.com/contact) for any assistance at <info@ixorasolution.com>
+Congrats!! I hope you got some clean implementation way for error handling. For any query, please leave a response below. I will reply as soon possible. Also, you can contact [iXora team](https://ixorasolution.com/contact) for any assistance.
