@@ -1,0 +1,46 @@
+expect to get status 200 => 200 should be ``
+(Bonus) => (Bonus Approach)
+
+https://www.some-unknown-url-1234.com/does => does should be separated
+
+Also, that error is received and We simply put a callback method handle the error. => To catch the error, We simply pass a callback method, and hanle it.
+
+there is always a big issue of callback hell. => callback-hell should be wraped
+
+We can get the response in first chain and in the final chain method, we can grab the error if there is any. Using promise, our updated codebase will be,
+
+=> Except the last `catch()` method We get the responses. And in the final chain method, we can grab the error if there is any. Using promise, our updated codebase will be,
+
+
+This is far better than previous `promise-chain` => wraped
+we have to repeat the try/catch block. => `try/catch`
+
+To update previous async/await approach => wraped `async/await`
+promise-wrapperto remove the repetitive try/catch block. => separate, wrap, wrap
+
+In utils.js we got two methods, to returns a promise . Since it’s a promise chain, if there’s an error occurs, it will parse and send the error.
+    => wrap `utils`
+    => wrap `to`
+    => wrap
+
+Method throwError will simply throw the error. => wrap `throwError`
+
+we will use a express-middleware => wrap `express-middleware`
+
+We will register the error-middleware => wrap `error-middleware`
+
+Make sure you are using the express error-middleware as the final middleare. =>
+ wrap `error-middleware`
+
+ The error middleware => wrap `error-middleware`
+
+The error middleware simply  => wrap `error-middleware`
+
+Some advantage of error-middlware over regular error-response is, => wrap `error-
+middleware`
+
+
+Wrap Up:
+    => Add header
+
+iXora team => add link

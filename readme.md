@@ -11,7 +11,7 @@ That means we should properly send an error message to the client and also log t
 
 ### Generate Error
 
-Let me demonstrate a real-world scenario, where some exception occurs. Here, we make a get request at URL [https://www.some-unknown-url-1234.com/](https://www.some-unknown-url-1234.com/) and expect to get status 200.
+Let me demonstrate a real-world scenario, where some exception occurs. Here, we make a get request at URL [https://www.some-unknown-url-1234.com/](https://www.some-unknown-url-1234.com/) and expect to get status `200`.
 
 Since the URL that does not exist, and it will through some unhandled error.
 
@@ -33,17 +33,17 @@ We will go through **4 approaches** here
 
 1. Traditional Callback Approach
 
-1. Promises
+2. Promises
 
-1. Async/Await
+3. `async/await`
 
-1. Promise Wrapper
+4. Promise Wrapper
 
-1. From Express.js Server (Bonus)
+5. From Express.js Server (Bonus Approach with Express.js)
 
 ### Project Setup
 
-- Create a project directory and open terminal into that.
+- Create a `project-directory` and open terminal into that.
 
   `> mkdir error-handling`
 
@@ -59,7 +59,7 @@ We will go through **4 approaches** here
 
 ### Callback Approach (The Ugly)
 
-Here URL https://www.some-unknown-url-1234.com/does not exist and for that, we are getting an error. Also, that error is received and We simply put a callback method handle the error.
+Here URL `https://www.some-unknown-url-1234.com/` does not exist and for that, we are getting an error. To catch the error, We simply pass a `callback` method, and handle it.
 
 ```javascript
 const request = require('request');
@@ -77,7 +77,7 @@ const myCallBackMethod = (err, response) => {
 requestWrapper('https://www.some-unknown-url-1234.com/', myCallBackMethod);
 ```
 
-In this callback approach, there is always a big issue of callback hell.
+In this callback approach, there is always a big irritating issue of `callback-hell`.
 
 ### Using Promise (The Bad)
 
@@ -90,7 +90,7 @@ SomeTask()
   .catch(error => throw error);
 ```
 
-We can get the response in first chain and in the final chain method, we can grab the error if there is any. Using promise, our updated codebase will be,
+Except the last `catch()` method We get the responses. And in the final chain method, `catch()`, we can grab the error if there is any. Using promise, our updated codebase will be,
 
 ```javascript
 const request = require('request-promise-native');
@@ -105,9 +105,9 @@ const requestWrapper = url => {
 requestWrapper('https://www.some-unknown-url-1234.com/');
 ```
 
-### Async/Await (The Bad)
+### async/await (The Bad)
 
-A promise chain is also another big headache. We will remove the promise and use a clean async/await format.
+A `promise-chain` is also another big headache. We will remove the promise and use a clean `async/await` format.
 
 ```javascript
 const request = require('request-promise-native');
@@ -123,11 +123,11 @@ const requestWrapper = async url => {
 requestWrapper('https://www.some-unknown-url-1234.com/');
 ```
 
-This is far better than previous promise chain. But the problem is, each time we try to catch an error, we have to repeat the try/catch block.
+This is far better than previous `promise-chain`. But the problem is, each time we try to catch an error, we have to repeat the `try/catch` block.
 
 ### Promise Wrapper(The Good)
 
-To update previous async/await approach, we can write a simple promise-wrapperto remove the repetitive try/catch block.
+To update previous `async/await` approach, we can write a simple `promise-wrapper` to remove the repetitive `try/catch` block.
 
 Let’s create some utility method in `utils.js`
 
@@ -147,9 +147,9 @@ module.exports = {
 };
 ```
 
-In utils.js we got two methods, to returns a promise . Since it’s a promise chain, if there’s an error occurs, it will parse and send the error.
+In `utils.js` we got two methods, `to()` method returns a promise . Since it’s a `promise-chain`, if there’s an error occurs, it will parse and send the error.
 
-Method throwError will simply throw the error. In the next section, we will use a express-middleware . Then it will come handy.
+Method `throwError()` will simply throw the error. In the next section, we will use a `express-middleware`. Then it will come handy.
 
 Now our updated approach will be
 
@@ -175,7 +175,7 @@ But there’s a problem with this implementation. Let’s say tomorrow we decide
 
 Then in the future, if we want to make it change, how we handle error, there will be a single place to modify.
 
-In express, there’s a special kind of middleware `error` middleware. We will register the error-middleware function after all the middleware functions.
+In express, there’s a special kind of middleware `error` middleware. We will register the `error-middleware` function after all the middleware functions.
 
 For express let’s create the server,
 
@@ -192,9 +192,9 @@ app.use(errorMiddleware);
 app.listen(8080);
 ```
 
-Make sure you are using the express error-middleware as the final middleare.
+Make sure you are using the express `error-middleware` as the final middleware.
 
-There’s left the last piece of the puzzle, The error middleware
+There’s left the last piece of the puzzle, The `error-middleware`
 
 ```javascript
 const ErrorTypeEnum = require('./errorTypeEnum');
@@ -205,12 +205,13 @@ module.exports = (err, req, res, next) =>
   });
 ```
 
-The error middleware simply grabs the thrown error and send it back to the client.
+The `error-middleware` simply grabs the thrown error and send it back to the client.
 
-Some advantage of error-middlware over regular error-response is,
+Some advantage of `error-middleware` over regular `error-response` is,
 
 - Cental placement for error response.
 
 - Whenever we throw an error, this middleware is always there to grab the error.
 
-I hope you got some clean implementation way for error handling. For any query, please leave a response below. I will reply as soon possible. Also, you can contact iXora team for any assistance at info@ixorasolution.com
+### Wrap Up
+Congrats!!!, I hope you got some clean implementation way for error handling. For any query, please leave a response below. I will reply as soon possible. Also, you can contact [iXora team](https://ixorasolution.com/contact) for any assistance at <info@ixorasolution.com>
