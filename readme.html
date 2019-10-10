@@ -1,0 +1,221 @@
+<h1 id="nodejserrorhandlingthegoodthebadtheugly">Node.js Error Handling (The Good, The Bad, The Ugly)</h1>
+
+<p><img src="node_error_handling.png" alt="Node.js Error Handling" /></p>
+
+<p>In an ideal world, everything works successfully. However in real worlds there always unexpected errors.
+For example, a connection to the database drops out for whatever reason.
+So as a best practice, developers should count these unexpected situations and handle them properly.
+That means we should properly send an error message to the client and also log the unexpected situation.</p>
+
+<blockquote>
+  <h1 id="inthisarticleweonlycovertheexceptionhandlingandalsohowcanweimprovetheexceptionhandlefunctionality">In this article we only cover the exception handling and also, how can we improve the exception-handle functionality.</h1>
+</blockquote>
+
+<h3 id="generateerror">Generate Error</h3>
+
+<p>Let me demonstrate a real-world scenario, where some exception occurs. Here, we make a get request at URL <a href="https://www.some-unknown-url-1234.com/">https://www.some-unknown-url-1234.com/</a> and expect to get status <code>200</code>.</p>
+
+<p>Since the URL that does not exist, and it will through some unhandled error.</p>
+
+<pre><code class="javascript language-javascript">const request = require('request');
+
+const requestWrapper = url =&gt; {
+  request.get(url);
+};
+
+requestWrapper('https://www.some-unknown-url-1234.com/');
+</code></pre>
+
+<p>In this situation, the node process will be terminated, could not serve as it should.</p>
+
+<blockquote>
+  <h1 id="soweneedtoproperlyhandlethesescenariosandthisarticleisallabouthandledthesescenarios"><strong>So we need to properly handle these scenarios. And this article is all about handled these scenarios.</strong></h1>
+</blockquote>
+
+<p>We will go through <strong>4 approaches</strong> here</p>
+
+<ol>
+<li><p>Traditional Callback Approach</p></li>
+
+<li><p>Promises</p></li>
+
+<li><p><code>async/await</code></p></li>
+
+<li><p>Promise Wrapper</p></li>
+
+<li><p>From Express.js Server (Bonus Approach with Express.js)</p></li>
+</ol>
+
+<h3 id="projectsetup">Project Setup</h3>
+
+<ul>
+<li><p>Create a <code>project-directory</code> and open terminal into that.</p>
+
+<p><code>&gt; mkdir error-handling</code></p>
+
+<p><code>&gt; cd error-handling</code></p></li>
+
+<li><p>Create a node project.</p>
+
+<p><code>&gt; npm init -y</code></p></li>
+
+<li><p>Install dependencies</p>
+
+<p><code>&gt; npm i express express-async-error parse-error request request-promise-native</code></p></li>
+</ul>
+
+<h3 id="callbackapproachtheugly">Callback Approach (The Ugly)</h3>
+
+<p>Here URL <code>https://www.some-unknown-url-1234.com/</code> does not exist and for that, we are getting an error. To catch the error, We simply pass a <code>callback</code> method, and handle it.</p>
+
+<pre><code class="javascript language-javascript">const request = require('request');
+
+const requestWrapper = (url, cb) =&gt; {
+  request.get(url, (err, response) =&gt; cb(err, response));
+};
+
+const myCallBackMethod = (err, response) =&gt; {
+  if (err) {
+    throw new Error(err);
+  }
+};
+
+requestWrapper('https://www.some-unknown-url-1234.com/', myCallBackMethod);
+</code></pre>
+
+<p>In this callback approach, there is always a big irritating issue of <code>callback-hell</code>.</p>
+
+<h3 id="usingpromisethebad">Using Promise (The Bad)</h3>
+
+<p>When we are using a promise, we can simply chain the catch() method.</p>
+
+<pre><code class="javascript language-javascript">SomeTask()
+  .then()
+  .then()
+  .catch(error =&gt; throw error);
+</code></pre>
+
+<p>Except the last <code>catch()</code> method We get the responses. And in the final chain method, <code>catch()</code>, we can grab the error if there is any. Using promise, our updated codebase will be,</p>
+
+<pre><code class="javascript language-javascript">const request = require('request-promise-native');
+
+const requestWrapper = url =&gt; {
+  request
+    .get(url)
+    .then(response =&gt; response)
+    .catch(err =&gt; console.log(err));
+};
+
+requestWrapper('https://www.some-unknown-url-1234.com/');
+</code></pre>
+
+<h3 id="asyncawaitthebad">async/await (The Bad)</h3>
+
+<p>A <code>promise-chain</code> is also another big headache. We will remove the promise and use a clean <code>async/await</code> format.</p>
+
+<pre><code class="javascript language-javascript">const request = require('request-promise-native');
+
+const requestWrapper = async url =&gt; {
+  try {
+    await request.get(url);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+requestWrapper('https://www.some-unknown-url-1234.com/');
+</code></pre>
+
+<p>This is far better than previous <code>promise-chain</code>. But the problem is, each time we try to catch an error, we have to repeat the <code>try/catch</code> block.</p>
+
+<h3 id="promisewrapperthegood">Promise Wrapper(The Good)</h3>
+
+<p>To update previous <code>async/await</code> approach, we can write a simple <code>promise-wrapper</code> to remove the repetitive <code>try/catch</code> block.</p>
+
+<p>Let’s create some utility method in <code>utils.js</code></p>
+
+<pre><code class="javascript language-javascript">const parseError = require('parse-error');
+
+const to = promise =&gt;
+  promise.then(data =&gt; [null, data]).catch(err =&gt; [parseError(err)]);
+
+const throwError = err =&gt; {
+  throw new Error(err);
+};
+
+module.exports = {
+  to,
+  throwError
+};
+</code></pre>
+
+<p>In <code>utils.js</code> we got two methods, <code>to()</code> method returns a promise . Since it’s a <code>promise-chain</code>, if there’s an error occurs, it will parse and send the error.</p>
+
+<p>Method <code>throwError()</code> will simply throw the error. In the next section, we will use a <code>express-middleware</code>. Then it will come handy.</p>
+
+<p>Now our updated approach will be</p>
+
+<pre><code class="javascript language-javascript">const request = require('request-promise-native');
+const { throwError, to } = require('./util');
+
+const requestWrapper = async url =&gt; {
+  [err, response] = await to(request.get(url));
+  err &amp;&amp; throwError('invalid error');
+};
+
+requestWrapper('https://www.some-unknown-url-1234.com/');
+</code></pre>
+
+<h3 id="errorhandlingmiddlewareforexpressjs">Error Handling Middleware (For Express.js)</h3>
+
+<p>In the last section, we take a clean approach to handle errors properly.</p>
+
+<p>But there’s a problem with this implementation. Let’s say tomorrow we decide to change the error message, that is sent to the client. In the current implementation, we have to go through every route handler, where we use the promise wrapper and modify that message.</p>
+
+<blockquote>
+  <h1 id="sowewanttomovethelogicforhandlingerrorssomewherecentral">So we want to move the logic for handling errors somewhere central.</h1>
+</blockquote>
+
+<p>Then in the future, if we want to make it change, how we handle error, there will be a single place to modify.</p>
+
+<p>In express, there’s a special kind of middleware <code>error</code> middleware. We will register the <code>error-middleware</code> function after all the middleware functions.</p>
+
+<p>For express let’s create the server,</p>
+
+<pre><code class="javascript language-javascript">const app = require('express')();
+require('express-async-errors');
+const errorMiddleware = require('./error');
+
+const requestWrapper = require('./requestWrapper');
+
+app.get('/:url', requestWrapper);
+app.use(errorMiddleware);
+
+app.listen(8080);
+</code></pre>
+
+<p>Make sure you are using the express <code>error-middleware</code> as the final middleware.</p>
+
+<p>There’s left the last piece of the puzzle, The <code>error-middleware</code></p>
+
+<pre><code class="javascript language-javascript">const ErrorTypeEnum = require('./errorTypeEnum');
+module.exports = (err, req, res, next) =&gt;
+  return res.status(500).json({
+    success: false,
+    ...JSON.parse(err.message)
+  });
+</code></pre>
+
+<p>The <code>error-middleware</code> simply grabs the thrown error and send it back to the client.</p>
+
+<p>Some advantage of <code>error-middleware</code> over regular <code>error-response</code> is,</p>
+
+<ul>
+<li><p>Cental placement for error response.</p></li>
+
+<li><p>Whenever we throw an error, this middleware is always there to grab the error.</p></li>
+</ul>
+
+<h3 id="wrapup">Wrap Up</h3>
+
+<p>Congrats!! I hope you got some clean implementation way for error handling. For any query, please leave a response below. I will reply as soon possible. Also, you can contact <a href="https://ixorasolution.com/contact">iXora team</a> for any assistance.</p>
